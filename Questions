@@ -1,0 +1,5 @@
+Пример с подсчетом классов (exampleType=counter):
+1) Сколько будет загружено классов, когда запустим метод main в ru.meetup.app.CounterApp ?
+2) Вы знаете, что такое NullPointerException ? Почему в ru/meetup/agent/AgentCounter.java:28 возвращается null ?
+Мы же можем получить NPE в этом месте.
+3) Зачем в ru/meetup/agent/AgentCounter.java:26 меняем / на точки ?

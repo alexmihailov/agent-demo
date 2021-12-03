@@ -9,17 +9,19 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-}
+val exampleType: String? by project
 
-tasks.jar {
+val jarAgent by tasks.creating(Jar::class.java) {
     archiveFileName.set("agent.jar")
-    manifest {
-        attributes("PreMain-Class" to "ru.meetup.agent.SimpleAgent")
-    }
-}
 
-tasks.register<Copy>("generateAgent") {
-    from(tasks.jar.get().outputs)
-    into(rootProject.layout.buildDirectory.dir("agent").get())
+    val agentClass = when(exampleType) {
+        "hello" -> "ru.meetup.agent.HelloAgent"
+        "counter" -> "ru.meetup.agent.AgentCounter"
+        else -> "ru.meetup.agent.HelloAgent"
+    }
+    manifest {
+        attributes("PreMain-Class" to agentClass)
+    }
+    from(sourceSets.main.get().output)
+    destinationDirectory.set(rootProject.layout.buildDirectory.dir("agent"))
 }
