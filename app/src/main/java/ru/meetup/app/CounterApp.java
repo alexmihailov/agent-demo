@@ -28,4 +28,6 @@ public class CounterApp {
     }
 
     public static class ClassThree {}
+
+    public static class ClassFour {}
 }

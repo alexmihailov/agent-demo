@@ -4,7 +4,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
 
-public class AgentCounter {
+public class CounterAgent {
 
     public static void premain(String args, Instrumentation instrumentation) {
         System.out.println("Agent Counter started");
