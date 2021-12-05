@@ -22,6 +22,7 @@ tasks.jar {
         "hello" -> "ru.meetup.agent.HelloAgent"
         "counter" -> "ru.meetup.agent.CounterAgent"
         "changeMethod" -> "ru.meetup.agent.ChangeMethodAgent"
+        "changeMethodAnnotation" -> "ru.meetup.agent.ChangeMethodAgentAnnotation"
         else -> "ru.meetup.agent.HelloAgent"
     }
     manifest {
