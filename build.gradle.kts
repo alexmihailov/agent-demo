@@ -12,3 +12,7 @@ tasks.register<JavaExec>("runAppWithAgent") {
     jvmArgs = listOf("-javaagent:${layout.buildDirectory.dir("agent").get().file("agent.jar").asFile.absolutePath}")
     classpath = layout.buildDirectory.dir("app").get().asFileTree
 }
+
+tasks.register("runAkkaHttpServer") {
+    dependsOn(":akka-app:run")
+}
