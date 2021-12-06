@@ -27,6 +27,8 @@ dependencies {
     implementation("io.kamon:kamon-prometheus_${Versions.scala}:${Versions.kamon}")
 
     implementation("commons-codec:commons-codec:1.15")
+    implementation("org.freemarker:freemarker:2.3.31")
+    implementation("org.slf4j:slf4j-simple:1.7.32")
 }
 
 application {
