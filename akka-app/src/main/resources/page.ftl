@@ -6,6 +6,6 @@
 </head>
 <body>
    <h2>Hello ${name}!</h2>
-   <img src="${imageUrl}" alt="Hello ${name}!">
+   <img src="data:image/png;base64,${gravatar}" alt="Hello ${name}!">
 </body>
 </html>
