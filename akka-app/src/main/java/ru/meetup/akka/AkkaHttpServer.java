@@ -22,7 +22,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import kamon.Kamon;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,29 +35,22 @@ public class AkkaHttpServer extends AllDirectives {
 
     private final static Logger LOG = LoggerFactory.getLogger(AkkaHttpServer.class);
 
-    private final String gravatarUrl;
-    private final int gravatarSize;
-
     private ActorRef<GravatarActor.Command> gravatarActor;
     private Scheduler scheduler;
 
-    public AkkaHttpServer(Config config) {
-        gravatarUrl = config.getString("gravatar-url");
-        gravatarSize = config.getInt("image-size");
-    }
 
     public static void main(String[] args) {
         Kamon.init();
         Config config = ConfigFactory.load();
-        var app = new AkkaHttpServer(ConfigFactory.load());
-        int port = config.getInt("server-port");
-        String host = config.getString("server-host");
-        ActorSystem.create(createGuardian(app, host, port), "meetup", config);
+        var app = new AkkaHttpServer();
+        ActorSystem.create(createGuardian(app, config), "meetup", config);
     }
 
-    public static Behavior<Void> createGuardian(AkkaHttpServer app, String host, int port) {
+    public static Behavior<Void> createGuardian(AkkaHttpServer app, Config config) {
         return Behaviors.setup(context -> {
-            app.spawnActors(context).initScheduler(context.getSystem().scheduler());
+            int port = config.getInt("server-port");
+            String host = config.getString("server-host");
+            app.spawnActors(context, config).initScheduler(context.getSystem().scheduler());
             final akka.actor.ActorSystem classicSystem = Adapter.toClassic(context.getSystem());
             Http.get(classicSystem).newServerAt(host, port)
                     .bind(app.createRoute())
@@ -79,8 +71,8 @@ public class AkkaHttpServer extends AllDirectives {
                 .withEntity(HttpEntities.create(ContentTypes.TEXT_HTML_UTF8, body));
     }
 
-    private AkkaHttpServer spawnActors(ActorContext<Void> context) {
-        this.gravatarActor = context.spawn(GravatarActor.create(), "gravatar");
+    private AkkaHttpServer spawnActors(ActorContext<Void> context, Config config) {
+        this.gravatarActor = context.spawn(GravatarActor.create(config), "gravatar");
         return this;
     }
 
@@ -99,15 +91,10 @@ public class AkkaHttpServer extends AllDirectives {
         );
     }
 
-    private String createGravatarUrl(String hash) {
-        return gravatarUrl + "/monster/" + hash + "?size=" + gravatarSize;
-    }
-
     private CompletionStage<ByteString> getGravatar(String name) {
-        var requestUrl = createGravatarUrl(DigestUtils.md5Hex(name));
         CompletionStage<StatusReply<ByteString>> gravatar = AskPattern.ask(
                 gravatarActor,
-                replyTo -> new GravatarActor.GetGravatar(requestUrl, replyTo),
+                replyTo -> new GravatarActor.GetGravatar(name, replyTo),
                 Duration.ofSeconds(5),
                 scheduler
         );

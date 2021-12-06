@@ -2,29 +2,53 @@ package ru.meetup.akka;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
+import akka.actor.typed.javadsl.Receive;
 import akka.http.javadsl.Http;
 import akka.http.javadsl.model.HttpRequest;
 import akka.http.javadsl.unmarshalling.Unmarshaller;
 import akka.pattern.StatusReply;
 import akka.util.ByteString;
+import com.typesafe.config.Config;
+import org.apache.commons.codec.digest.DigestUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-public final class GravatarActor {
+public final class GravatarActor extends AbstractBehavior<GravatarActor.Command> {
 
-    private GravatarActor() {
+    private final Map<String, ByteString> localCache = new HashMap<>();
+
+    private final String gravatarUrl;
+    private final int gravatarSize;
+
+    private GravatarActor(ActorContext<Command> context, Config config) {
+        super(context);
+
+        this.gravatarUrl = config.getString("gravatar-url");
+        this.gravatarSize = config.getInt("image-size");
+    }
+
+    @Override
+    public Receive<Command> createReceive() {
+        return newReceiveBuilder()
+                .onMessage(GetGravatar.class , cmd -> onGetGravatar(getContext(), cmd))
+                .onMessage(FoundedGravatar.class, this::onFoundedGravatar)
+                .build();
     }
 
     public interface Command {}
 
     public static class GetGravatar implements Command {
-        private final String url;
+        private final String name;
         private final ActorRef<StatusReply<ByteString>> replyTo;
 
-        public GetGravatar(String url, ActorRef<StatusReply<ByteString>> replyTo) {
-            this.url = url;
+        public GetGravatar(String name, ActorRef<StatusReply<ByteString>> replyTo) {
+            this.name = name;
             this.replyTo = replyTo;
         }
     }
@@ -55,29 +79,35 @@ public final class GravatarActor {
         }
     }
 
-    public static Behavior<Command> create() {
-        return Behaviors.setup(GravatarActor::gravatarActor);
+    public static Behavior<Command> create(Config config) {
+        return Behaviors.setup(ctx -> new GravatarActor(ctx, config));
     }
 
-    private static Behavior<Command> gravatarActor(ActorContext<Command> context) {
-        return Behaviors.receive(Command.class)
-                .onMessage(GetGravatar.class , cmd -> onGetGravatar(context, cmd))
-                .onMessage(FoundedGravatar.class, GravatarActor::onFoundedGravatar)
-                .build();
+    private String createGravatarUrl(String hash) {
+        return gravatarUrl + "/monster/" + hash + "?size=" + gravatarSize;
     }
 
-    private static Behavior<Command> onGetGravatar(ActorContext<Command> context, GetGravatar cmd) {
-        CompletionStage<ByteString> resFuture = Http.get(context.getSystem())
-                .singleRequest(HttpRequest.create(cmd.url))
-                .thenCompose(response -> Unmarshaller.entityToByteString()
-                        .unmarshal(response.entity(), context.getSystem()))
-                .thenApply(ByteString::encodeBase64);
+    private Behavior<Command> onGetGravatar(ActorContext<Command> context, GetGravatar cmd) {
+        CompletionStage<ByteString> resFuture;
+        if (localCache.containsKey(cmd.name)) {
+            resFuture = CompletableFuture.completedFuture(localCache.get(cmd.name));
+        } else {
+            var requestUrl = createGravatarUrl(DigestUtils.md5Hex(cmd.name));
+            resFuture = Http.get(context.getSystem())
+                    .singleRequest(HttpRequest.create(requestUrl))
+                    .thenCompose(response -> Unmarshaller.entityToByteString()
+                            .unmarshal(response.entity(), context.getSystem()))
+                    .thenApply(ByteString::encodeBase64);
+        }
         context.pipeToSelf(resFuture, (result, exception) -> new FoundedGravatar(result, exception, cmd));
         return Behaviors.same();
     }
 
-    private static Behavior<Command> onFoundedGravatar(FoundedGravatar cmd) {
+    private Behavior<Command> onFoundedGravatar(FoundedGravatar cmd) {
         var reply = cmd.toReply();
+        if (!localCache.containsKey(cmd.cmd.name) && reply.isSuccess()) {
+            localCache.put(cmd.cmd.name, reply.getValue());
+        }
         cmd.getReplyTo().tell(reply);
         return Behaviors.same();
     }
