@@ -13,6 +13,3 @@ tasks.register<JavaExec>("runAppWithAgent") {
     classpath = layout.buildDirectory.dir("app").get().asFileTree
 }
 
-tasks.register("runAkkaHttpServer") {
-    dependsOn(":akka-app:run")
-}

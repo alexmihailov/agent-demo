@@ -1,0 +1,25 @@
+version: "3.2" # Docker 17.04.0+
+services:
+  dnmonster:
+    image: "amouat/dnmonster:latest"
+    container_name: "dnmonster"
+    ports:
+      - "8081:8080"
+  gravatar:
+    image: "ru.meetup/akka-app:1.0-snapshot"
+    container_name: "gravatar-app"
+    links:
+      - "dnmonster:dnmonster"
+    ports:
+      - "8080:8080"
+      - "5266:5266"
+      - "9095:9095"
+  prometheus:
+    image: "prom/prometheus:v2.31.1"
+    container_name: "prometheus"
+    links:
+      - "gravatar:gravatar"
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"

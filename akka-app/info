@@ -1,6 +1,0 @@
-http://localhost:8080/gravatar?name=alex
-
-http://localhost:5266/#/
-http://localhost:9095/metrics
-
-http://localhost:8081/monster/{hash}

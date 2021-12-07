@@ -38,7 +38,6 @@ public class AkkaHttpServer extends AllDirectives {
     private ActorRef<GravatarActor.Command> gravatarActor;
     private Scheduler scheduler;
 
-
     public static void main(String[] args) {
         Kamon.init();
         Config config = ConfigFactory.load();

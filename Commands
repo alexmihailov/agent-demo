@@ -1,8 +1,0 @@
-.\gradlew -q runAppWithAgent -PexampleType=hello
-.\gradlew -q runAppWithAgent -PexampleType=counter
-.\gradlew -q runAppWithAgent -PexampleType=changeMethod
-.\gradlew -q runAppWithAgent -PexampleType=changeMethodAnnotation (для работы аннотации, в агенте и классе Person нужно сделать правки).
-
-.\gradlew -q runAkkaHttpServer
-
- docker run --rm --name=gravatar -p 8081:8080 -d amouat/dnmonster
