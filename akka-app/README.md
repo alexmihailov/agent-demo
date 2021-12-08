@@ -31,3 +31,10 @@
 
 * `gravatar_unique_users_total` - количество уникальных пользователей (появляется после первого запроса)
 * `http_server_requests_total` - Количество выполненных запросов ранжированных по коду ответа
+* `jvm_memory_allocation_bytes_total` - общее количество выделенной памяти JVM
+
+# Запуск клиента
+
+```shell
+.\gradlew :client-app:run
+```

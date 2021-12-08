@@ -25,6 +25,7 @@ dependencies {
     implementation("com.typesafe.akka:akka-http_${Versions.scala}:10.2.7")
 
     implementation("io.kamon:kamon-bundle_${Versions.scala}:${Versions.kamon}")
+    implementation("io.kamon:kamon-system-metrics_${Versions.scala}:${Versions.kamon}")
     implementation("io.kamon:kamon-prometheus_${Versions.scala}:${Versions.kamon}")
     implementation("io.kamon:kamon-zipkin_${Versions.scala}:${Versions.kamon}")
 
