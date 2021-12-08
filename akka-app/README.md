@@ -22,3 +22,5 @@
 [Метрики для gravatar-app](http://localhost:9095/metrics)
 
 [Prometheus status page](http://localhost:9090/)
+
+[Grafana dashboard](http://localhost:3000/)
