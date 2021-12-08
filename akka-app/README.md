@@ -24,3 +24,8 @@
 [Prometheus status page](http://localhost:9090/)
 
 [Grafana dashboard](http://localhost:3000/)
+
+#Метрики
+
+* `gravatar_unique_users_total` - количество уникальных пользователей (появляется после первого запроса)
+* `http_server_requests_total` - Количество выполненных запросов ранжированных по коду ответа

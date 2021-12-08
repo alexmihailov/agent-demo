@@ -12,6 +12,7 @@ import akka.http.javadsl.unmarshalling.Unmarshaller;
 import akka.pattern.StatusReply;
 import akka.util.ByteString;
 import com.typesafe.config.Config;
+import kamon.Kamon;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.HashMap;
@@ -92,6 +93,7 @@ public final class GravatarActor extends AbstractBehavior<GravatarActor.Command>
         if (localCache.containsKey(cmd.name)) {
             resFuture = CompletableFuture.completedFuture(localCache.get(cmd.name));
         } else {
+            Kamon.counter("gravatar.unique.users").withoutTags().increment();
             var requestUrl = createGravatarUrl(DigestUtils.md5Hex(cmd.name));
             resFuture = Http.get(context.getSystem())
                     .singleRequest(HttpRequest.create(requestUrl))
