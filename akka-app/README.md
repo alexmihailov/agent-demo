@@ -25,6 +25,8 @@
 
 [Grafana dashboard](http://localhost:3000/)
 
+[Zipkin dashboard](http://localhost:9411/)
+
 #Метрики
 
 * `gravatar_unique_users_total` - количество уникальных пользователей (появляется после первого запроса)

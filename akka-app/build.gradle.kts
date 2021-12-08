@@ -26,6 +26,7 @@ dependencies {
 
     implementation("io.kamon:kamon-bundle_${Versions.scala}:${Versions.kamon}")
     implementation("io.kamon:kamon-prometheus_${Versions.scala}:${Versions.kamon}")
+    implementation("io.kamon:kamon-zipkin_${Versions.scala}:${Versions.kamon}")
 
     implementation("commons-codec:commons-codec:1.15")
     implementation("org.freemarker:freemarker:2.3.31")

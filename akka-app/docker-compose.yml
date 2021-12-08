@@ -10,6 +10,7 @@ services:
     container_name: "gravatar-app"
     links:
       - "dnmonster:dnmonster"
+      - "zipkin:zipkin"
     ports:
       - "8080:8080"
       - "5266:5266"
@@ -33,3 +34,8 @@ services:
     volumes:
       - "./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources"
       - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
+  zipkin:
+    image: "openzipkin/zipkin:2.23.9"
+    container_name: "zipkin"
+    ports:
+      - "9411:9411"
