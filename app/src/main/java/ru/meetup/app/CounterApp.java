@@ -9,6 +9,7 @@ public class CounterApp {
         new ClassOne();
         new ClassTwo(new Random().nextInt());
         new ClassThree();
+        System.out.println(ClassFour.str);
     }
 
     public static class ClassOne {
@@ -29,5 +30,7 @@ public class CounterApp {
 
     public static class ClassThree {}
 
-    public static class ClassFour {}
+    public static class ClassFour {
+        public static final String str = "ClassFour static str";
+    }
 }
