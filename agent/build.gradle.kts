@@ -21,6 +21,7 @@ tasks.jar {
     val agentClass = when(exampleType) {
         "hello" -> "ru.meetup.agent.HelloAgent"
         "counter" -> "ru.meetup.agent.CounterAgent"
+        "counterBroken" -> "ru.meetup.agent.CounterBrokenAgent"
         "changeMethod" -> "ru.meetup.agent.ChangeMethodAgent"
         "changeMethodAnnotation" -> "ru.meetup.agent.ChangeMethodAgentAnnotation"
         "changeMethodException" -> "ru.meetup.agent.ChangeMethodAgentException"
