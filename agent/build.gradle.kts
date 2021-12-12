@@ -23,6 +23,7 @@ tasks.jar {
         "counter" -> "ru.meetup.agent.CounterAgent"
         "changeMethod" -> "ru.meetup.agent.ChangeMethodAgent"
         "changeMethodAnnotation" -> "ru.meetup.agent.ChangeMethodAgentAnnotation"
+        "changeMethodException" -> "ru.meetup.agent.ChangeMethodAgentException"
         else -> "ru.meetup.agent.HelloAgent"
     }
     manifest {
